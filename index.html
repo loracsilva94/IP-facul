@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rota Certa</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    /* Tela de Login */
+    #login {
+      background: url('pexels-kelly-17291234.jpg') center/cover no-repeat;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2563eb;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+    }
+
+    .mostrar-senha {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .forgot {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .forgot a {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* Área do App */
+    #app {
+      display: none;
+      min-height: 100vh;
+      background: #f3f4f6;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .tab {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab button {
+      flex: 1;
+      background: #93c5fd;
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .tab button.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .registro {
+      background: #f4f4f4;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .resumo {
+      background: #dbeafe;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TELA DE LOGIN -->
+  <div id="login">
+    <div class="login-box">
+      <h1>Rota Certa</h1>
+
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Digite seu e-mail">
+
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="Digite sua senha">
+
+      <div class="mostrar-senha">
+        <input type="checkbox" id="mostrarSenha">
+        <label for="mostrarSenha">Mostrar senha</label>
+      </div>
+
+      <button class="btn" onclick="login()">Entrar</button>
+
+      <div class="forgot">
+        <a href="#" onclick="alert('Função em desenvolvimento')">Esqueceu a senha?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁREA PRINCIPAL DO APP -->
+  <div id="app">
+    <div class="container">
+      <h1>Rota Certa</h1>
+
+      <div class="tab">
+        <button id="b1" class="active" onclick="aba('registro')">Registrar</button>
+        <button id="b2" onclick="aba('linha')">Linha do Tempo</button>
+      </div>
+
+      <div id="registro">
+        <label>Bairro</label>
+        <input id="bairro">
+
+        <label>Data</label>
+        <input type="date" id="data">
+
+        <label>Gasto com Combustível (R$)</label>
+        <input type="number" id="combustivel">
+
+        <label>Valor Vendido/Coletado (R$)</label>
+        <input type="number" id="valor">
+
+        <label>Tipo</label>
+        <select id="tipo">
+          <option>Venda</option>
+          <option>Coleta de óleo</option>
+        </select>
+
+        <button class="btn" style="background:#16a34a" onclick="salvar()">Salvar</button>
+      </div>
+
+      <div id="linha" class="hidden">
+        <div id="resumo" class="resumo"></div>
+        <div id="lista"></div>
+      </div>
+
+      <button class="btn" style="background:#ef4444;margin-top:10px;" onclick="sair()">Sair</button>
+    </div>
+  </div>
+
+  <script>
+    const senhaInput = document.getElementById('senha');
+    const mostrarSenha = document.getElementById('mostrarSenha');
+
+    mostrarSenha.addEventListener('change', (e) => {
+      senhaInput.type = e.target.checked ? 'text' : 'password';
+    });
+
+    function login() {
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+
+      if (!email || !senha) {
+        alert('Preencha todos os campos para entrar.');
+        return;
+      }
+
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      carregar();
+    }
+
+    function sair() {
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('login').style.display = 'flex';
+    }
+
+    function aba(nome) {
+      document.getElementById('registro').classList.toggle('hidden', nome !== 'registro');
+      document.getElementById('linha').classList.toggle('hidden', nome !== 'linha');
+      document.getElementById('b1').classList.toggle('active', nome === 'registro');
+      document.getElementById('b2').classList.toggle('active', nome === 'linha');
+
+      if (nome === 'linha') carregar();
+    }
+
+    function salvar() {
+      const registro = {
+        bairro: bairro.value,
+        data: data.value,
+        combustivel: +combustivel.value,
+        valor: +valor.value,
+        tipo: tipo.value
+      };
+
+      if (!registro.bairro || !registro.data) {
+        alert('Preencha todos os campos obrigatórios.');
+        return;
+      }
+
+      const registros = JSON.parse(localStorage.getItem('registros') || '[]');
+      registros.push(registro);
+      localStorage.setItem('registros', JSON.stringify(registros));
+
+      alert('Registro salvo com sucesso!');
+      bairro.value = data.value = combustivel.value = valor.value = '';
+      carregar();
+    }
+
+    function carregar() {
+      const registros = JSON.parse(localStorage.getItem('registros') || '[]');
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      let ganhos = 0;
+      let gastos = 0;
+
+      registros.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+      registros.forEach(r => {
+        ganhos += r.valor;
+        gastos += r.combustivel;
+
+        lista.innerHTML += `
+          <div class="registro">
+            <b>${r.tipo}</b> - ${r.bairro}<br>
+            Data: ${r.data}<br>
+            Combustível: R$${r.combustivel.toFixed(2)}<br>
+            Valor: R$${r.valor.toFixed(2)}
+          </div>
+        `;
+      });
+
+      const lucro = ganhos - gastos;
+      document.getElementById('resumo').innerHTML =
+        `Ganhos: R$${ganhos.toFixed(2)} | Gasto: R$${gastos.toFixed(2)}<br>
+         Lucro: <span style="color:${lucro >= 0 ? 'green' : 'red'}">R$${lucro.toFixed(2)}</span>`;
+    }
+  </script>
+</body>
+</html>
