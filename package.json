@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "install": "^0.13.0",
+    "jnpm": "^0.0.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
