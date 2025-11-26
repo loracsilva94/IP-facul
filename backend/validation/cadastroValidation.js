@@ -21,3 +21,9 @@ export async function validarEntradaUsuario(usuario) {
     throw new Error("Senha é obrigatória");
   }
 }
+
+export async function validarDelecaoUsuario(id) {
+  if (!id) {
+    throw new Error("ID do usuário é obrigatório para deleção");
+  }
+}

@@ -1,16 +1,16 @@
 # Backend - Projeto Integrador ADS
 
-Este é o backend da aplicação do Projeto Integrador do curso de Análise e Desenvolvimento de Sistemas (ADS). A aplicação gerencia motoristas e vendedores ambulantes, permitindo cadastro, login e consultas de usuários.
+Este é o backend da aplicação do Projeto Integrador do curso de Análise e Desenvolvimento de Sistemas (ADS). A aplicação gerencia motoristas e vendedores ambulantes, permitindo cadastro, login, gerenciamento de serviços, vendas e horários recomendados.
 
 ## Tecnologias Utilizadas
 
-- **Node.js** com **Express.js** para o servidor web
-- **MySQL2** para conexão com o banco de dados MySQL
-- **JWT (JSON Web Token)** para autenticação
-- **CORS** para permitir requisições cross-origin
-- **Dotenv** para variáveis de ambiente
-- **Nodemon** para desenvolvimento (reinício automático do servidor)
-- **Crypto** (nativo do Node.js) para criptografia MD5 de senhas
+- Node.js com Express.js para servidor web
+- MySQL2 para conexão com banco MySQL
+- JWT para autenticação
+- CORS para permitir requisições cross-origin
+- Dotenv para variáveis de ambiente
+- Nodemon para desenvolvimento com reinício automático
+- Crypto para criptografia MD5 de senhas
 
 ## Estrutura do Projeto
 
@@ -18,131 +18,120 @@ Este é o backend da aplicação do Projeto Integrador do curso de Análise e De
 backend/
 ├── app.js                 # Arquivo principal do servidor
 ├── routes.js              # Configuração das rotas
-├── controller/
-│   └── cadastroController.js  # Endpoints de cadastro e login
-├── service/
-│   └── cadastroService.js     # Lógica de negócio
-├── repository/
-│   ├── connect.js             # Conexão com o banco de dados
-│   └── cadastroRepository.js  # Consultas SQL
-├── validation/
-│   └── cadastroValidation.js  # Validações de entrada
-├── auth/
-│   └── jwt.js                 # Geração e verificação de tokens JWT
+├── controller/            # Definição dos endpoints
+├── service/               # Lógica de negócio
+├── repository/            # Queries SQL e conexão com DB
+├── validation/            # Validações dos dados recebidos
+├── auth/                  # Autenticação JWT
 ├── database.sql           # Script de criação do banco de dados
 ├── package.json           # Dependências e scripts
 └── .env                   # Variáveis de ambiente (não versionado)
 ```
 
-## Instalação e Configuração
+## Configuração e Execução
 
-1. **Instalar dependências:**
-   ```
-   npm install
-   ```
+1. Instale as dependências:
+```
+npm install
+```
 
-2. **Configurar variáveis de ambiente:**
-   Crie um arquivo `.env` na pasta `backend` com as seguintes variáveis:
-   ```
-   API_PORTA=3000
-   MYSQL_HOST=localhost
-   MYSQL_USER=seu_usuario_mysql
-   MYSQL_PASS=sua_senha_mysql
-   MYSQL_DB=motoristas_vendedores
-   KEY=sua_chave_secreta_jwt
-   ```
+2. Configure o banco de dados MySQL e crie as tabelas executando o script `database.sql`.
 
-3. **Configurar o banco de dados:**
-   - Execute o script `database.sql` no seu servidor MySQL para criar as tabelas necessárias.
-   - A tabela `Usuarios` não está no script atual, mas é usada no código. Adicione-a conforme necessário.
+3. Crie o arquivo `.env` na pasta backend com as variáveis:
 
-## Como Executar
+```
+API_PORTA=3000
+MYSQL_HOST=localhost
+MYSQL_USER=seu_usuario_mysql
+MYSQL_PASS=sua_senha_mysql
+MYSQL_DB=motoristas_vendedores
+KEY=sua_chave_secreta_jwt
+```
 
-- **Desenvolvimento (com Nodemon):**
-  ```
-  npm start
-  ```
-  ou
-  ```
-  npx nodemon app.js
-  ```
+4. Inicie o servidor:
 
-- **Produção:**
-  ```
-  node app.js
-  ```
+- Em desenvolvimento (com nodemon):
+```
+npm start
+```
+- Em produção:
+```
+node app.js
+```
 
-O servidor iniciará na porta definida em `API_PORTA` (padrão: 3000).
+O servidor será executado na porta definida na variável `API_PORTA`.
 
 ## Endpoints da API
 
-### POST /entrar
-Realiza login do usuário.
+### Usuários
 
-**Corpo da requisição:**
-```json
-{
-  "usuario": "email@exemplo.com",
-  "senha": "senha123"
-}
-```
+- POST `/entrar` — Login
+  - Body JSON: `{ "nome": "...", "email": "...", "senha": "..." }`
+  - Retorna: Token JWT
 
-**Resposta de sucesso:**
-```json
-{
-  "token": "jwt_token_aqui"
-}
-```
+- POST `/criar` — Cadastro de usuário
+  - Body JSON: `{ "usuario": "...", "email": "...", "senha": "...", "telefone": "...", "cidade": "...", "funcao": "MOTORISTA" }`
+  - Retorna: ID e token JWT
 
-### POST /criar
-Cadastra um novo usuário.
+- GET `/consultar/usuario/:id` — Consulta por ID
+  - Retorna dados do usuário
 
-**Corpo da requisição:**
-```json
-{
-  "idInstituicao": 1,
-  "usuario": "email@exemplo.com",
-  "senha": "senha123",
-  "role": "ADMIN"
-}
-```
+- DELETE `/deletar/usuario/:id` — Deletar usuário
 
-**Resposta de sucesso:**
-```json
-{
-  "token": "jwt_token_aqui"
-}
-```
+- PUT `/atualizar/usuario/:id` — Atualizar usuário
 
-### GET /consultar/usuario?id=1
-Consulta um usuário pelo ID.
+- GET `/listar/usuarios` — Listar todos os usuários
 
-**Resposta de sucesso:**
-```json
-{
-  "usuario": { ...dados do usuário... }
-}
-```
+### Serviços
+
+- GET `/servicos` — Listar serviços
+- GET `/servicos/:id` — Consultar serviço por ID
+- POST `/servicos` — Criar novo serviço
+- PUT `/servicos/:id` — Atualizar serviço
+- DELETE `/servicos/:id` — Deletar serviço
+
+### Vendas
+
+- GET `/vendas` — Listar vendas
+- GET `/vendas/:id` — Consultar venda por ID
+- POST `/vendas` — Criar nova venda
+  - Body JSON exemplo:
+  ```json
+  {
+    "id_servico": 1,
+    "cep": "12345-678",
+    "bairro": "Centro",
+    "logradouro": "Rua A",
+    "numero": "100",
+    "quantidade": 2,
+    "valor_total": 150.00
+  }
+  ```
+- PUT `/vendas/:id` — Atualizar venda
+  - Body JSON igual ao POST
+- DELETE `/vendas/:id` — Deletar venda
+
+### Horários Bons
+
+- GET `/horarios-bons` — Listar horários bons
+- GET `/horarios-bons/:id` — Consultar horário bom por ID
+- POST `/horarios-bons` — Criar horário bom
+- PUT `/horarios-bons/:id` — Atualizar horário bom
+- DELETE `/horarios-bons/:id` — Deletar horário bom
 
 ## Autenticação
 
-A API utiliza JWT para autenticação. Inclua o token no header `Authorization` como `Bearer <token>` para endpoints protegidos.
+- A API utiliza JWT para autenticação.
+- Inclua o token no header `Authorization` como `Bearer <token>` para endpoints protegidos.
 
-## Observações
+## Considerações
 
-- As senhas são criptografadas usando MD5 (não recomendado para produção; considere usar bcrypt).
-- O código tem algumas inconsistências nos mapeamentos de campos entre controller, service e repository que precisam ser corrigidas.
-- A tabela `Usuarios` referenciada no código não está definida no `database.sql`; ajuste conforme necessário.
+- Senhas são criptografadas com MD5 (não recomendado para produção).
+- Certifique-se que os IDs referenciados (como `id_servico` em vendas) existam para evitar erros de chave estrangeira.
 
 ## Desenvolvimento
 
-Para contribuir:
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
+Sinta-se à vontade para contribuir criando forks e pull requests.
 
-## Licença
+---
 
-Este projeto é parte do Projeto Integrador do curso ADS.

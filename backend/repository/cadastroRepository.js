@@ -34,7 +34,51 @@ export async function verificarUsuario(id) {
   WHERE id = ?;
   
   `;
-
   const [resposta] = await con.query(comando, [id]);
   return resposta[0]; // retorna o registro (ou undefined se não achar)
+}
+
+export async function deletarUsuario(id){
+  const comando = `
+    DELETE FROM Usuarios
+    WHERE id = ?;
+  `;
+  const resposta = await con.query(comando, [id]);
+  return resposta[0].affectedRows;
+};
+
+export async function listarUsuarios() {
+  const comando = `
+    SELECT id, nome, email, telefone, cidade, funcao
+    FROM Usuarios;
+  `;
+  const [resposta] = await con.query(comando);
+  return resposta; // retorna a lista de usuários
+}
+
+export async function atualizarUsuario(id, usuario) {
+  const comando = `
+    UPDATE Usuarios
+    SET nome = ?, email = ?, telefone = ?, cidade = ?, funcao = ?
+    WHERE id = ?;
+  `;
+  const [resposta] = await con.query(comando, [
+    usuario.nome,
+    usuario.email,
+    usuario.telefone,
+    usuario.cidade,
+    usuario.funcao,
+    id
+  ]);
+  return resposta.affectedRows; // retorna o número de linhas afetadas
+}
+
+export async function alterarSenhaUsuario(id, novaSenha) {
+  const comando = `
+    UPDATE Usuarios
+    SET senha = ?
+    WHERE id = ?;
+  `;
+  const [resposta] = await con.query(comando, [novaSenha, id]);
+  return resposta.affectedRows; // retorna o número de linhas afetadas
 }
